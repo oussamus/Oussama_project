@@ -1,0 +1,2 @@
+rootProject.name='BluetoothSilence'
+include ':app'
