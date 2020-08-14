@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothDevice device;
     private BluetoothSocket socket;
     private OutputStream outputStream;
-
+    static boolean active = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
         final BluetoothDevice hc05_Oussama = btAdapter.getRemoteDevice("98:D3:21:F7:4E:7C");
         final UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
         final boolean[] connected = new boolean[1];
+
+        active=false;
+
         //********************************************************
         BluetoothSocket btSocket = null;
         try {
@@ -150,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });//mPairedBtn.setOn..
-
+        System.out.println("Verifying Main onCreate");
     } // onCreate()
 
     @Override

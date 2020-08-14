@@ -11,9 +11,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -22,31 +24,39 @@ import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
-public class OnOffActivity extends AppCompatActivity {
+public class OnOffActivity extends MainActivity {
     private final String DEVICE_ADDRESS = "98:D3:21:F7:4E:7C"; //MAC Address of Bluetooth Module
     private final UUID PORT_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
     private BluetoothDevice device;
     private BluetoothSocket socket;
     private OutputStream outputStream;
-    private InputStream inputStream;
+    public static InputStream inputStream;
     String command; //string variable that will store value to be transmitted to the bluetooth module
+    Thread workerThread;
+    byte[] readBuffer;
+    int readBufferPosition;
+    volatile boolean stopWorker;
+    TextView mTextView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_on_off);
         if (BTinit()) {
+            System.out.println("Verifying the BTconnect()");
             BTconnect();
         }
+        MainActivity.active = true;
         final Button on_off_button = findViewById(R.id.buttonOnOff);
-        final ImageView img = (ImageView) findViewById(R.id.imageView);
+        readingData();
+
         if (GlobalClass.onOffButtonB) {
             on_off_button.setBackgroundColor(Color.parseColor("#03DA15"));
-            img.setColorFilter(getResources().getColor(R.color.green));
         } else {
             on_off_button.setBackgroundColor(Color.parseColor("#DA0335"));
-            img.setColorFilter(getResources().getColor(R.color.red));
         }
+
         on_off_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,29 +65,31 @@ public class OnOffActivity extends AppCompatActivity {
                     command = "F";
                     try {
                         socket.getOutputStream().write(command.getBytes());
+
+                        System.out.println("Verifying command = F");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                     Toast.makeText(OnOffActivity.this, "Turning OFF!", Toast.LENGTH_SHORT).show();
                     on_off_button.setBackgroundColor(Color.parseColor("#DA0335"));
-                    img.setColorFilter(v.getContext().getResources().getColor(R.color.red));
+                    //img.setColorFilter(v.getContext().getResources().getColor(R.color.red));
                 } else {
                     GlobalClass.onOffButtonB = true;
                     command = "N";
                     try {
                         socket.getOutputStream().write(command.getBytes());
+                        System.out.println("Verifying command = N");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
 
                     Toast.makeText(OnOffActivity.this, "Turning ON!", Toast.LENGTH_SHORT).show();
                     on_off_button.setBackgroundColor(Color.parseColor("#03DA15"));
-                    img.setColorFilter(v.getContext().getResources().getColor(R.color.green));
+                    // img.setColorFilter(v.getContext().getResources().getColor(R.color.green));
                 }
 
             }
         });
-
 
     }//onCreate
 
@@ -146,4 +158,67 @@ public class OnOffActivity extends AppCompatActivity {
 
         return connected;
     }
+
+    public void readingData() {
+
+        final ImageView mImg = (ImageView) findViewById(R.id.imageView);
+        mImg.setColorFilter(getResources().getColor(R.color.grey));
+        mTextView = (TextView)findViewById(R.id.textView);
+
+        final Handler handler = new Handler();
+        final byte delimiter = 10; //This is the ASCII code for a newline character
+        stopWorker = false;
+        readBufferPosition = 0;
+        readBuffer = new byte[1024];
+        workerThread = new Thread(new Runnable() {
+            public void run() {
+                while (!Thread.currentThread().isInterrupted() && !stopWorker) {
+                    try {
+                        int bytesAvailable = inputStream.available();
+                        if (bytesAvailable > 0) {
+                            if (!MainActivity.active) {
+                                inputStream.close();
+                            }
+                            byte[] packetBytes = new byte[bytesAvailable];
+                            inputStream.read(packetBytes);
+                            for (int i = 0; i < bytesAvailable; i++) {
+                                byte b = packetBytes[i];
+                                if (b == delimiter) {
+                                    byte[] encodedBytes = new byte[readBufferPosition];
+                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+                                    final String data = new String(encodedBytes, "US-ASCII");
+                                    readBufferPosition = 0;
+
+                                    handler.post(new Runnable() {
+                                        public void run() {
+
+                                        }
+                                    });
+                                    System.out.println("Verifying the Data: " + data);
+
+                                } else {
+                                    readBuffer[readBufferPosition++] = b;
+                                    if(b==49){
+                                        mImg.setColorFilter(getResources().getColor(R.color.green));
+                                    }else if (b==48){
+                                        mImg.setColorFilter(getResources().getColor(R.color.red));
+                                    }
+
+                                }
+                            }
+                        }
+                    } catch (IOException ex) {
+                        stopWorker = true;
+                    }
+                }
+
+            }
+        });
+
+        workerThread.start();
+
+
+    }
+
+
 }
