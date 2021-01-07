@@ -1,21 +1,17 @@
 package com.example.bluetoothsilence;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -36,7 +32,6 @@ public class OnOffActivity extends MainActivity {
     byte[] readBuffer;
     int readBufferPosition;
     volatile boolean stopWorker;
-    TextView mTextView;
 
 
     @Override
@@ -48,16 +43,386 @@ public class OnOffActivity extends MainActivity {
             BTconnect();
         }
         MainActivity.active = true;
-        final Button on_off_button = findViewById(R.id.buttonOnOff);
+        final Button light_button = findViewById(R.id.light_btn);
+        final Button M5_right = (Button) findViewById(R.id.M5_right_btn);
+        final Button M5_left = (Button) findViewById(R.id.M5_left_btn);
+        final Button M4_up = (Button) findViewById(R.id.M4_up_btn);
+        final Button M4_down = (Button) findViewById(R.id.M4_down_btn);
+        final Button M3_up = (Button) findViewById(R.id.M3_up_btn);
+        final Button M3_down = (Button) findViewById(R.id.M3_down_btn);
+        final Button M2_up = (Button) findViewById(R.id.M2_up_btn);
+        final Button M2_down = (Button) findViewById(R.id.M2_down_btn);
+        final Button M1_open = (Button) findViewById(R.id.M1_open_btn);
+        final Button M1_close = (Button) findViewById(R.id.M1_close_btn);
         readingData();
+        //************************************************
+        M1_open.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
 
+                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                {
+                    command = "a";
+
+                    try
+                    {
+                        outputStream.write(command.getBytes()); //transmits the value of command to the bluetooth module
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                {
+                    command = "..";
+                    try
+                    {
+                        outputStream.write(command.getBytes());
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                return false;
+            }
+
+        });
+        M1_close.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                {
+                    command = "b";
+
+                    try
+                    {
+                        outputStream.write(command.getBytes()); //transmits the value of command to the bluetooth module
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                {
+                    command = "..";
+                    try
+                    {
+                        outputStream.write(command.getBytes());
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                return false;
+            }
+
+        });
+        M2_up.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                {
+                    command = "c";
+
+                    try
+                    {
+                        outputStream.write(command.getBytes()); //transmits the value of command to the bluetooth module
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                {
+                    command = "..";
+                    try
+                    {
+                        outputStream.write(command.getBytes());
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                return false;
+            }
+
+        });
+        M2_down.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                {
+                    command = "d";
+
+                    try
+                    {
+                        outputStream.write(command.getBytes()); //transmits the value of command to the bluetooth module
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                {
+                    command = "..";
+                    try
+                    {
+                        outputStream.write(command.getBytes());
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                return false;
+            }
+
+        });
+        M3_up.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                {
+                    command = "e";
+
+                    try
+                    {
+                        outputStream.write(command.getBytes()); //transmits the value of command to the bluetooth module
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                {
+                    command = "..";
+                    try
+                    {
+                        outputStream.write(command.getBytes());
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                return false;
+            }
+
+        });
+        M3_down.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                {
+                    command = "f";
+
+                    try
+                    {
+                        outputStream.write(command.getBytes()); //transmits the value of command to the bluetooth module
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                {
+                    command = "..";
+                    try
+                    {
+                        outputStream.write(command.getBytes());
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                return false;
+            }
+
+        });
+        M4_up.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                {
+                    command = "g";
+
+                    try
+                    {
+                        outputStream.write(command.getBytes()); //transmits the value of command to the bluetooth module
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                {
+                    command = "..";
+                    try
+                    {
+                        outputStream.write(command.getBytes());
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                return false;
+            }
+
+        });
+        M4_down.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                {
+                    command = "h";
+
+                    try
+                    {
+                        outputStream.write(command.getBytes()); //transmits the value of command to the bluetooth module
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                {
+                    command = "..";
+                    try
+                    {
+                        outputStream.write(command.getBytes());
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                return false;
+            }
+
+        });
+        M5_left.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                {
+                    command = "i";
+
+                    try
+                    {
+                        outputStream.write(command.getBytes()); //transmits the value of command to the bluetooth module
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                {
+                    command = "..";
+                    try
+                    {
+                        outputStream.write(command.getBytes());
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                return false;
+            }
+
+        });
+        M5_right.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                {
+                    command = "j";
+
+                    try
+                    {
+                        outputStream.write(command.getBytes()); //transmits the value of command to the bluetooth module
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                {
+                    command = "..";
+                    try
+                    {
+                        outputStream.write(command.getBytes());
+                    }
+                    catch(IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                return false;
+            }
+
+        });
+
+
+        //*************************************************
         if (GlobalClass.onOffButtonB) {
-            on_off_button.setBackgroundColor(Color.parseColor("#03DA15"));
+            light_button.setBackgroundColor(Color.parseColor("#03DA15"));
         } else {
-            on_off_button.setBackgroundColor(Color.parseColor("#DA0335"));
+            light_button.setBackgroundColor(Color.parseColor("#DA0335"));
         }
 
-        on_off_button.setOnClickListener(new View.OnClickListener() {
+        light_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (GlobalClass.onOffButtonB) {
@@ -71,7 +436,7 @@ public class OnOffActivity extends MainActivity {
                         e.printStackTrace();
                     }
                     Toast.makeText(OnOffActivity.this, "Turning OFF!", Toast.LENGTH_SHORT).show();
-                    on_off_button.setBackgroundColor(Color.parseColor("#DA0335"));
+                    light_button.setBackgroundColor(Color.parseColor("#DA0335"));
                     //img.setColorFilter(v.getContext().getResources().getColor(R.color.red));
                 } else {
                     GlobalClass.onOffButtonB = true;
@@ -84,7 +449,7 @@ public class OnOffActivity extends MainActivity {
                     }
 
                     Toast.makeText(OnOffActivity.this, "Turning ON!", Toast.LENGTH_SHORT).show();
-                    on_off_button.setBackgroundColor(Color.parseColor("#03DA15"));
+                    light_button.setBackgroundColor(Color.parseColor("#03DA15"));
                     // img.setColorFilter(v.getContext().getResources().getColor(R.color.green));
                 }
 
@@ -163,7 +528,6 @@ public class OnOffActivity extends MainActivity {
 
         final ImageView mImg = (ImageView) findViewById(R.id.imageView);
         mImg.setColorFilter(getResources().getColor(R.color.grey));
-        mTextView = (TextView)findViewById(R.id.textView);
 
         final Handler handler = new Handler();
         final byte delimiter = 10; //This is the ASCII code for a newline character

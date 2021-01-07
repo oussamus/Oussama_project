@@ -83,30 +83,26 @@ public class MainActivity extends AppCompatActivity {
         mOnBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!mBlueAdapter.isEnabled()) {
-                    showToast("Turning ON Bluetooth...");
-                    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(intent, REQUEST_ENABLE_BT);
+                    if (!mBlueAdapter.isEnabled()) {
+                        showToast("Turning ON Bluetooth...");
+                        Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(intent, REQUEST_ENABLE_BT);
 
-                    if (connected[0] == false) {
-                        int counter = 0; // try to connect the socket 3 times
-                        do {
-                            try {
-                                finalBtSocket.connect();
-                                connected[0] = true;
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            counter++;
-                        } while (!finalBtSocket.isConnected() && counter < 3);
-
-                    }
-
-                } else {
-                    showToast("Bluetooth is already ON");
-                }
-
+                        if (connected[0] == false) {
+                            int counter = 0; // try to connect the socket 3 times
+                            do {
+                                try {
+                                    finalBtSocket.connect();
+                                    connected[0] = true;
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                counter++;
+                            } while (!finalBtSocket.isConnected() && counter < 3);
+                        }
+                    } else { showToast("Bluetooth is already ON"); }
             }
+
         });//mOnBtn.setOn..
 
         //offBtn click
@@ -124,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });//mOffBtn.setOn..
 
-        //StartApp bluetooth
+        //Start App bluetooth
         mStartAppBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
