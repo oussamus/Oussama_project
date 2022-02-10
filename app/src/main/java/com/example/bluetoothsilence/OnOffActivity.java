@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,28 +22,29 @@ import java.util.Set;
 import java.util.UUID;
 
 public class OnOffActivity extends MainActivity {
+    private static final String TAG = "BluetoothActivity";
     private final String DEVICE_ADDRESS = "98:D3:21:F7:4E:7C"; //MAC Address of Bluetooth Module
     private final UUID PORT_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
-    private BluetoothDevice device;
-    private BluetoothSocket socket;
+    public static BluetoothDevice hc05_device;
+    public static BluetoothSocket socket = null;
     private OutputStream outputStream;
     public static InputStream inputStream;
-    String command; //string variable that will store value to be transmitted to the bluetooth module
+    String command; //string variable that will store the value transmitted to the bluetooth module
     Thread workerThread;
     byte[] readBuffer;
     int readBufferPosition;
     volatile boolean stopWorker;
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_on_off);
-        if (BTinit()) {
-            System.out.println("Verifying the BTconnect()");
-            BTconnect();
-        }
-        MainActivity.active = true;
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        hc05_device = bluetoothAdapter.getRemoteDevice(DEVICE_ADDRESS);
+
+        final Button connectBtn = findViewById(R.id.ConnectBtn2);
         final Button light_button = findViewById(R.id.light_btn);
         final Button M5_right = (Button) findViewById(R.id.M5_right_btn);
         final Button M5_left = (Button) findViewById(R.id.M5_left_btn);
@@ -56,11 +58,39 @@ public class OnOffActivity extends MainActivity {
         final Button M1_close = (Button) findViewById(R.id.M1_close_btn);
         readingData();
         //************************************************
+        connectBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int count = 0;
+
+                    do{
+                        try {
+                            socket = hc05_device.createRfcommSocketToServiceRecord(PORT_UUID);
+                            if(!socket.isConnected()) {
+                                socket.connect();
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        count++;
+                    }while(count<3);
+
+                System.out.println("Is Socket from OnOffActivity connected? " + socket.isConnected());
+                if (socket.isConnected()) {
+                    try {
+                        outputStream = socket.getOutputStream(); //gets the output stream of the socket
+                        inputStream = socket.getInputStream();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
         M1_open.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                if (event.getAction() == MotionEvent.ACTION_DOWN && outputStream != null) //MotionEvent.ACTION_DOWN is when you hold a button down
                 {
                     command = "a";
 
@@ -73,7 +103,7 @@ public class OnOffActivity extends MainActivity {
                         e.printStackTrace();
                     }
                 }
-                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                else if(event.getAction() == MotionEvent.ACTION_UP && outputStream != null) //MotionEvent.ACTION_UP is when you release a button
                 {
                     command = "..";
                     try
@@ -95,7 +125,7 @@ public class OnOffActivity extends MainActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                if (event.getAction() == MotionEvent.ACTION_DOWN && outputStream != null) //MotionEvent.ACTION_DOWN is when you hold a button down
                 {
                     command = "b";
 
@@ -108,7 +138,7 @@ public class OnOffActivity extends MainActivity {
                         e.printStackTrace();
                     }
                 }
-                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                else if(event.getAction() == MotionEvent.ACTION_UP && outputStream != null) //MotionEvent.ACTION_UP is when you release a button
                 {
                     command = "..";
                     try
@@ -130,7 +160,7 @@ public class OnOffActivity extends MainActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                if (event.getAction() == MotionEvent.ACTION_DOWN && outputStream != null) //MotionEvent.ACTION_DOWN is when you hold a button down
                 {
                     command = "c";
 
@@ -143,7 +173,7 @@ public class OnOffActivity extends MainActivity {
                         e.printStackTrace();
                     }
                 }
-                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                else if(event.getAction() == MotionEvent.ACTION_UP && outputStream != null) //MotionEvent.ACTION_UP is when you release a button
                 {
                     command = "..";
                     try
@@ -166,7 +196,7 @@ public class OnOffActivity extends MainActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                if (event.getAction() == MotionEvent.ACTION_DOWN && outputStream != null) //MotionEvent.ACTION_DOWN is when you hold a button down
                 {
                     command = "d";
 
@@ -179,7 +209,7 @@ public class OnOffActivity extends MainActivity {
                         e.printStackTrace();
                     }
                 }
-                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                else if(event.getAction() == MotionEvent.ACTION_UP && outputStream != null) //MotionEvent.ACTION_UP is when you release a button
                 {
                     command = "..";
                     try
@@ -202,7 +232,7 @@ public class OnOffActivity extends MainActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                if (event.getAction() == MotionEvent.ACTION_DOWN && outputStream != null) //MotionEvent.ACTION_DOWN is when you hold a button down
                 {
                     command = "e";
 
@@ -215,7 +245,7 @@ public class OnOffActivity extends MainActivity {
                         e.printStackTrace();
                     }
                 }
-                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                else if(event.getAction() == MotionEvent.ACTION_UP && outputStream != null) //MotionEvent.ACTION_UP is when you release a button
                 {
                     command = "..";
                     try
@@ -238,7 +268,7 @@ public class OnOffActivity extends MainActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                if (event.getAction() == MotionEvent.ACTION_DOWN && outputStream != null) //MotionEvent.ACTION_DOWN is when you hold a button down
                 {
                     command = "f";
 
@@ -251,7 +281,7 @@ public class OnOffActivity extends MainActivity {
                         e.printStackTrace();
                     }
                 }
-                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                else if(event.getAction() == MotionEvent.ACTION_UP && outputStream != null) //MotionEvent.ACTION_UP is when you release a button
                 {
                     command = "..";
                     try
@@ -274,7 +304,7 @@ public class OnOffActivity extends MainActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                if (event.getAction() == MotionEvent.ACTION_DOWN && outputStream != null) //MotionEvent.ACTION_DOWN is when you hold a button down
                 {
                     command = "g";
 
@@ -287,7 +317,7 @@ public class OnOffActivity extends MainActivity {
                         e.printStackTrace();
                     }
                 }
-                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                else if(event.getAction() == MotionEvent.ACTION_UP && outputStream != null) //MotionEvent.ACTION_UP is when you release a button
                 {
                     command = "..";
                     try
@@ -310,7 +340,7 @@ public class OnOffActivity extends MainActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                if (event.getAction() == MotionEvent.ACTION_DOWN && outputStream != null) //MotionEvent.ACTION_DOWN is when you hold a button down
                 {
                     command = "h";
 
@@ -323,7 +353,7 @@ public class OnOffActivity extends MainActivity {
                         e.printStackTrace();
                     }
                 }
-                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                else if(event.getAction() == MotionEvent.ACTION_UP && outputStream != null) //MotionEvent.ACTION_UP is when you release a button
                 {
                     command = "..";
                     try
@@ -346,7 +376,7 @@ public class OnOffActivity extends MainActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                if (event.getAction() == MotionEvent.ACTION_DOWN && outputStream != null) //MotionEvent.ACTION_DOWN is when you hold a button down
                 {
                     command = "i";
 
@@ -359,7 +389,7 @@ public class OnOffActivity extends MainActivity {
                         e.printStackTrace();
                     }
                 }
-                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                else if(event.getAction() == MotionEvent.ACTION_UP && outputStream != null) //MotionEvent.ACTION_UP is when you release a button
                 {
                     command = "..";
                     try
@@ -382,7 +412,7 @@ public class OnOffActivity extends MainActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                if (event.getAction() == MotionEvent.ACTION_DOWN) //MotionEvent.ACTION_DOWN is when you hold a button down
+                if (event.getAction() == MotionEvent.ACTION_DOWN && outputStream != null) //MotionEvent.ACTION_DOWN is when you hold a button down
                 {
                     command = "j";
 
@@ -395,7 +425,7 @@ public class OnOffActivity extends MainActivity {
                         e.printStackTrace();
                     }
                 }
-                else if(event.getAction() == MotionEvent.ACTION_UP) //MotionEvent.ACTION_UP is when you release a button
+                else if(event.getAction() == MotionEvent.ACTION_UP && outputStream != null) //MotionEvent.ACTION_UP is when you release a button
                 {
                     command = "..";
                     try
@@ -421,43 +451,42 @@ public class OnOffActivity extends MainActivity {
         } else {
             light_button.setBackgroundColor(Color.parseColor("#DA0335"));
         }
-
         light_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (GlobalClass.onOffButtonB) {
-                    GlobalClass.onOffButtonB = false;
-                    command = "F";
-                    try {
-                        socket.getOutputStream().write(command.getBytes());
+                if(outputStream != null){
+                    if (GlobalClass.onOffButtonB) {
+                        GlobalClass.onOffButtonB = false;
+                        command = "F";
+                        try {
+                            socket.getOutputStream().write(command.getBytes());
 
-                        System.out.println("Verifying command = F");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Toast.makeText(OnOffActivity.this, "Turning OFF!", Toast.LENGTH_SHORT).show();
-                    light_button.setBackgroundColor(Color.parseColor("#DA0335"));
-                    //img.setColorFilter(v.getContext().getResources().getColor(R.color.red));
-                } else {
-                    GlobalClass.onOffButtonB = true;
-                    command = "N";
-                    try {
-                        socket.getOutputStream().write(command.getBytes());
-                        System.out.println("Verifying command = N");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Toast.makeText(OnOffActivity.this, "Turning OFF!", Toast.LENGTH_SHORT).show();
+                        light_button.setBackgroundColor(Color.parseColor("#DA0335"));
+                        //img.setColorFilter(v.getContext().getResources().getColor(R.color.red));
+                    } else {
+                        GlobalClass.onOffButtonB = true;
+                        command = "N";
+                        try {
+                            socket.getOutputStream().write(command.getBytes());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
-                    Toast.makeText(OnOffActivity.this, "Turning ON!", Toast.LENGTH_SHORT).show();
-                    light_button.setBackgroundColor(Color.parseColor("#03DA15"));
-                    // img.setColorFilter(v.getContext().getResources().getColor(R.color.green));
+                        Toast.makeText(OnOffActivity.this, "Turning ON!", Toast.LENGTH_SHORT).show();
+                        light_button.setBackgroundColor(Color.parseColor("#03DA15"));
+                        // img.setColorFilter(v.getContext().getResources().getColor(R.color.green));
+                    }
                 }
-
             }
         });
 
     }//onCreate
 
+    /*
     public boolean BTinit() {
         boolean found = false;
 
@@ -523,7 +552,7 @@ public class OnOffActivity extends MainActivity {
 
         return connected;
     }
-
+ */
     public void readingData() {
 
         final ImageView mImg = (ImageView) findViewById(R.id.imageView);
@@ -537,45 +566,47 @@ public class OnOffActivity extends MainActivity {
         workerThread = new Thread(new Runnable() {
             public void run() {
                 while (!Thread.currentThread().isInterrupted() && !stopWorker) {
-                    try {
-                        int bytesAvailable = inputStream.available();
-                        if (bytesAvailable > 0) {
-                            if (!MainActivity.active) {
-                                inputStream.close();
-                            }
-                            byte[] packetBytes = new byte[bytesAvailable];
-                            inputStream.read(packetBytes);
-                            for (int i = 0; i < bytesAvailable; i++) {
-                                byte b = packetBytes[i];
-                                if (b == delimiter) {
-                                    byte[] encodedBytes = new byte[readBufferPosition];
-                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-                                    final String data = new String(encodedBytes, "US-ASCII");
-                                    readBufferPosition = 0;
+                    if (inputStream != null) {
+                        try {
+                            int bytesAvailable = inputStream.available();
+                            if (bytesAvailable > 0) {
+                                //if (!MainActivity.active) {
+                                if (true) {
+                                    inputStream.close();
+                                }
+                                byte[] packetBytes = new byte[bytesAvailable];
+                                inputStream.read(packetBytes);
+                                for (int i = 0; i < bytesAvailable; i++) {
+                                    byte b = packetBytes[i];
+                                    if (b == delimiter) {
+                                        byte[] encodedBytes = new byte[readBufferPosition];
+                                        System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+                                        final String data = new String(encodedBytes, "US-ASCII");
+                                        readBufferPosition = 0;
 
-                                    handler.post(new Runnable() {
-                                        public void run() {
+                                        handler.post(new Runnable() {
+                                            public void run() {
 
+                                            }
+                                        });
+                                        System.out.println("Verifying the Data: " + data);
+
+                                    } else {
+                                        readBuffer[readBufferPosition++] = b;
+                                        if (b == 49) {
+                                            mImg.setColorFilter(getResources().getColor(R.color.green));
+                                        } else if (b == 48) {
+                                            mImg.setColorFilter(getResources().getColor(R.color.red));
                                         }
-                                    });
-                                    System.out.println("Verifying the Data: " + data);
 
-                                } else {
-                                    readBuffer[readBufferPosition++] = b;
-                                    if(b==49){
-                                        mImg.setColorFilter(getResources().getColor(R.color.green));
-                                    }else if (b==48){
-                                        mImg.setColorFilter(getResources().getColor(R.color.red));
                                     }
-
                                 }
                             }
+                        } catch (IOException ex) {
+                            stopWorker = true;
                         }
-                    } catch (IOException ex) {
-                        stopWorker = true;
                     }
                 }
-
             }
         });
 

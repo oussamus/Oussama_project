@@ -22,20 +22,15 @@
         android:id="@+id/bluetoothIv"
         android:layout_width="100dp"
         android:layout_height="100dp"/>
+
     <Button
-        android:id="@+id/onBtn"
-        android:minWidth="200dp"
+        android:id="@+id/connectBtn"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Turn ON"
-        style="@style/Widget.AppCompat.Button.Colored"/>
-    <Button
-        android:id="@+id/offBtn"
         android:minWidth="200dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Turn OFF"
-        style="@style/Widget.AppCompat.Button.Colored"/>
+        android:text="Connect" />
+
     <Button
         android:id="@+id/startAppBtn"
         android:minWidth="200dp"
@@ -43,20 +38,14 @@
         android:layout_height="wrap_content"
         android:text="Start the App"
         style="@style/Widget.AppCompat.Button.Colored"/>
-    <Button
-        android:id="@+id/pairedBtn"
-        android:minWidth="200dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Get paired Devices"
-        style="@style/Widget.AppCompat.Button.Colored"/>
+
     <TextView
         android:id="@+id/pairedTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#000"
         android:minWidth="200dp"
-        android:text=""/>
+        android:text=""
+        android:textColor="#000" />
 
 
 
