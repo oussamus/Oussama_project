@@ -34,7 +34,7 @@ public class OnOffActivity extends MainActivity {
     byte[] readBuffer;
     int readBufferPosition;
     volatile boolean stopWorker;
-
+   // This comment is for testing a Git functionality.
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
